@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BrainStop — Growth Hub</title>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ESJJM6WGGK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-ESJJM6WGGK');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --ink: #0f0e0c;
+  --paper: #f7f5f0;
+  --cream: #efecea;
+  --accent: #c8622a;
+  --gold: #b8953a;
+  --muted: #7a786f;
+  --border: rgba(15,14,12,0.1);
+  --serif: 'DM Serif Display', Georgia, serif;
+  --sans: 'DM Sans', sans-serif;
+  --radius: 3px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:15px;line-height:1.6;overflow-x:hidden;}
+button{font-family:var(--sans);cursor:pointer;}
+
+/* ── LAYOUT ── */
+.app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:56px 1fr;min-height:100vh;}
+
+/* ── NAV ── */
+header{
+  grid-column:1/-1;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;
+  background:var(--ink);color:var(--paper);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  position:sticky;top:0;z-index:100;
+}
+.brand{font-family:var(--serif);font-size:1.1rem;letter-spacing:-0.01em;}
+.brand span{color:var(--accent);}
+.ghub-badge{display:flex;align-items:center;gap:8px;font-size:13px;}
+.ghub-num{font-family:var(--serif);font-size:1.2rem;color:var(--gold);}
+.ghub-label{color:rgba(247,245,240,0.5);font-size:11px;}
+.level-tag{font-size:10px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:rgba(184,149,58,0.15);color:var(--gold);padding:3px 10px;border-radius:20px;}
+
+/* ── SIDEBAR ── */
+aside{
+  background:var(--cream);
+  border-right:1px solid var(--border);
+  padding:1.5rem 0;
+  overflow-y:auto;
+}
+.nav-section{padding:0 1rem 1rem;}
+.nav-section-label{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:0 0.5rem;margin-bottom:0.5rem;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:var(--radius);font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--border);color:var(--ink);}
+.nav-item.active{background:var(--ink);color:var(--paper);}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:0.7;}
+.nav-item.active svg{opacity:1;}
+.nav-divider{height:1px;background:var(--border);margin:0.75rem 1rem;}
+
+/* ── MAIN ── */
+main{overflow-y:auto;padding:2rem;}
+.page{display:none;animation:fadeIn .3s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── PAGE HEADER ── */
+.page-header{margin-bottom:2rem;}
+.page-eyebrow{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;}
+.page-title{font-family:var(--serif);font-size:clamp(1.8rem,3vw,2.4rem);line-height:1.1;letter-spacing:-0.02em;margin-bottom:0.4rem;}
+.page-sub{font-size:13px;color:var(--muted);max-width:520px;line-height:1.6;}
+
+/* ── CARDS ── */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);}
+.card{background:var(--paper);padding:1.25rem;cursor:pointer;transition:background .15s;position:relative;}
+.card:hover{background:var(--cream);}
+.card-cat{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;}
+.card-title{font-family:var(--serif);font-size:1rem;margin-bottom:0.35rem;line-height:1.2;}
+.card-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:0.75rem;}
+.card-footer{display:flex;justify-content:space-between;align-items:center;}
+.card-age{font-size:11px;color:var(--muted);}
+.card-ghub{font-size:11px;font-weight:500;color:var(--gold);}
+.card-arrow{position:absolute;bottom:1rem;right:1rem;opacity:0;transform:translate(-4px,4px);transition:all .2s;color:var(--accent);font-size:16px;}
+.card:hover .card-arrow{opacity:1;transform:translate(0,0);}
+
+/* ── FILTER TABS ── */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem;}
+.ftab{padding:5px 14px;font-size:12px;font-weight:500;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;}
+.ftab.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+/* ── GAME ARENA ── */
+#game-arena{display:none;}
+#game-arena.active{display:block;}
+.arena-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;}
+.arena-back{padding:6px 14px;font-size:12px;font-weight:500;border:1px solid var(--border);background:transparent;border-radius:var(--radius);color:var(--muted);transition:all .15s;}
+.arena-back:hover{border-color:var(--ink);color:var(--ink);}
+.arena-title{font-family:var(--serif);font-size:1.4rem;}
+.arena-meta{font-size:12px;color:var(--muted);margin-left:auto;}
+.game-frame{border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;background:var(--paper);min-height:300px;}
+.game-content{font-size:14px;line-height:1.8;color:var(--ink);}
+.game-question{font-family:var(--serif);font-size:1.3rem;margin-bottom:1.25rem;line-height:1.3;}
+.game-question table{border-collapse:collapse;margin:1rem auto 1.25rem;font-size:1.4rem;}
+.game-question table td{border:2px solid var(--ink);width:3rem;height:3rem;text-align:center;vertical-align:middle;font-weight:600;padding:0;}
+.game-question table td.missing{color:var(--accent);font-size:1.6rem;}
+.game-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem;}
+.game-opt{padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--paper);font-size:13px;text-align:left;transition:all .15s;cursor:pointer;}
+.game-opt:hover{border-color:var(--ink);background:var(--cream);}
+.game-opt.correct{background:#EAF3DE;border-color:#639922;color:#27500A;}
+.game-opt.wrong{background:#FCEBEB;border-color:#E24B4A;color:#A32D2D;}
+.game-input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--sans);font-size:14px;background:var(--paper);color:var(--ink);outline:none;transition:border-color .15s;}
+.game-input:focus{border-color:var(--ink);}
+.game-actions{display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap;}
+.btn-ink{padding:9px 20px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:var(--radius);font-size:13px;font-weight:500;transition:all .15s;}
+.btn-ink:hover{background:var(--accent);border-color:var(--accent);}
+.btn-outline{padding:9px 20px;background:transparent;color:var(--ink);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;transition:all .15s;}
+.btn-outline:hover{border-color:var(--ink);}
+.game-feedback{margin-top:1rem;padding:0.75rem 1rem;border-radius:var(--radius);font-size:13px;line-height:1.6;display:none;}
+.game-feedback.show{display:block;}
+.game-feedback.good{background:#EAF3DE;color:#27500A;border:1px solid #C0DD97;}
+.game-feedback.bad{background:#FCEBEB;color:#791F1F;border:1px solid #F7C1C1;}
+.game-score-bar{display:flex;align-items:center;gap:1rem;padding:0.75rem 1rem;background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem;font-size:13px;}
+.score-label{color:var(--muted);}
+.score-val{font-weight:500;}
+
+/* ── LESSONS ── */
+.lesson-list{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.lesson-row{display:grid;grid-template-columns:36px 1fr auto;gap:1rem;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.lesson-row:last-child{border-bottom:none;}
+.lesson-row:hover{background:var(--cream);}
+.lnum{font-family:var(--serif);font-size:1.2rem;color:var(--border);}
+.ltitle{font-size:13px;font-weight:500;margin-bottom:2px;}
+.ldesc{font-size:12px;color:var(--muted);}
+.lmeta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;white-space:nowrap;}
+.lage{font-size:11px;color:var(--muted);}
+.lghub{font-size:11px;font-weight:500;color:var(--gold);}
+.lesson-done{color:#639922;}
+
+/* ── LESSON VIEWER ── */
+#lesson-viewer{display:none;}
+#lesson-viewer.active{display:block;}
+.lesson-content{border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;background:var(--paper);min-height:300px;font-size:14px;line-height:1.8;}
+.lesson-content h3{font-family:var(--serif);font-size:1.3rem;margin:1rem 0 0.5rem;}
+.lesson-content p{margin-bottom:0.75rem;color:var(--ink);}
+.lesson-content ul{padding-left:1.25rem;margin-bottom:0.75rem;}
+.lesson-content li{margin-bottom:0.35rem;font-size:13px;color:var(--muted);}
+.lesson-content strong{color:var(--ink);font-weight:500;}
+.lesson-interact{margin-top:1.25rem;padding:1rem;background:var(--cream);border-radius:var(--radius);border:1px solid var(--border);}
+.lesson-interact-label{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;}
+
+/* ── TUTOR CHAT ── */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 180px);min-height:400px;}
+.chat-messages{flex:1;overflow-y:auto;padding:1rem;border:1px solid var(--border);border-bottom:none;border-radius:var(--radius) var(--radius) 0 0;background:var(--paper);display:flex;flex-direction:column;gap:1rem;}
+.msg{display:flex;gap:10px;align-items:flex-start;max-width:80%;}
+.msg.user{align-self:flex-end;flex-direction:row-reverse;}
+.msg-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.msg.ai .msg-avatar{background:var(--ink);color:var(--paper);}
+.msg.user .msg-avatar{background:var(--accent);color:var(--paper);}
+.msg-bubble{padding:8px 12px;border-radius:var(--radius);font-size:13px;line-height:1.6;}
+.msg.ai .msg-bubble{background:var(--cream);border:1px solid var(--border);color:var(--ink);}
+.msg.user .msg-bubble{background:var(--ink);color:var(--paper);}
+.chat-input-row{display:flex;gap:0;border:1px solid var(--border);border-radius:0 0 var(--radius) var(--radius);overflow:hidden;}
+.chat-input{flex:1;padding:12px 14px;border:none;font-family:var(--sans);font-size:13px;background:var(--cream);color:var(--ink);outline:none;}
+.chat-send{padding:0 18px;background:var(--ink);color:var(--paper);border:none;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s;white-space:nowrap;}
+.chat-send:hover{background:var(--accent);}
+.typing{display:flex;gap:4px;align-items:center;padding:8px 12px;}
+.typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce .8s infinite;}
+.typing span:nth-child(2){animation-delay:.15s;}
+.typing span:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-6px);}}
+.chat-suggestions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0.75rem;}
+.chat-sug{padding:5px 12px;font-size:12px;border:1px solid var(--border);border-radius:20px;background:transparent;cursor:pointer;color:var(--muted);transition:all .15s;}
+.chat-sug:hover{border-color:var(--ink);color:var(--ink);}
+
+/* ── DASHBOARD ── */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem;}
+.dash-stat{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;}
+.dash-stat-label{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;}
+.dash-stat-val{font-family:var(--serif);font-size:1.8rem;line-height:1;}
+.dash-stat-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.progress-bar{height:5px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s;}
+.token-section{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;}
+.token-block{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.token-block-head{padding:0.75rem 1rem;background:var(--cream);border-bottom:1px solid var(--border);font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+.token-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 1rem;border-bottom:1px solid var(--border);font-size:13px;}
+.token-row:last-child{border-bottom:none;}
+.token-row-label{color:var(--muted);}
+.token-row-val{font-weight:500;color:var(--gold);}
+.earn-btn{padding:5px 12px;background:var(--ink);color:var(--paper);border:none;border-radius:var(--radius);font-size:11px;font-weight:500;cursor:pointer;transition:background .15s;}
+.earn-btn:hover{background:var(--accent);}
+.earn-btn:disabled{opacity:.4;cursor:not-allowed;}
+.tx-log{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;max-height:200px;overflow-y:auto;}
+.tx-row{display:flex;justify-content:space-between;padding:0.6rem 1rem;border-bottom:1px solid var(--border);font-size:12px;}
+.tx-row:last-child{border-bottom:none;}
+.tx-label{color:var(--muted);}
+.tx-plus{color:#3B6D11;font-weight:500;}
+.tx-minus{color:#A32D2D;font-weight:500;}
+.levels-row{display:flex;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:1rem;}
+.lvl{flex:1;padding:0.75rem 0.5rem;text-align:center;background:var(--paper);}
+.lvl.current{background:var(--ink);}
+.lvl-name{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;}
+.lvl.current .lvl-name{color:rgba(247,245,240,0.5);}
+.lvl-pts{font-family:var(--serif);font-size:0.85rem;color:var(--gold);}
+
+/* ── AI LOADING ── */
+.ai-loading{display:flex;align-items:center;gap:10px;padding:1rem;color:var(--muted);font-size:13px;}
+.ai-dots{display:flex;gap:4px;}
+.ai-dots span{width:5px;height:5px;background:var(--accent);border-radius:50%;animation:bounce .8s infinite;}
+.ai-dots span:nth-child(2){animation-delay:.15s;}
+.ai-dots span:nth-child(3){animation-delay:.3s;}
+
+/* ── MISC ── */
+.section-gap{margin-bottom:1.5rem;}
+.inline-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;}
+.badge-green{background:#EAF3DE;color:#3B6D11;}
+.badge-amber{background:#FAEEDA;color:#854F0B;}
+.badge-ink{background:var(--ink);color:var(--paper);}
+@media(max-width:700px){
+  .app{grid-template-columns:1fr;}
+  aside{display:none;}
+  .token-section{grid-template-columns:1fr;}
+  .game-options{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<header>
+  <div class="brand">Brain<span>Stop</span> — Growth Hub</div>
+  <div style="display:flex;align-items:center;gap:1.25rem;">
+    <div class="ghub-badge">
+      <div>
+        <div class="ghub-num" id="hdr-bal">0</div>
+        <div class="ghub-label">GHUB</div>
+      </div>
+    </div>
+    <div class="level-tag" id="hdr-level">Seedling</div>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="nav-section">
+    <div class="nav-section-label">Hub</div>
+    <button class="nav-item active" onclick="showPage('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" onclick="showPage('games')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M8 12h8M12 8v8"/></svg>
+      Brain Games
+    </button>
+    <button class="nav-item" onclick="showPage('lessons')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Lessons
+    </button>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-section">
+    <div class="nav-section-label">Smart</div>
+    <button class="nav-item" onclick="showPage('tutor')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      Tutor
+    </button>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-section">
+    <div class="nav-section-label">Account</div>
+    <button class="nav-item" onclick="showPage('token')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      GHUB Token
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main>
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard" class="page active">
+    <div class="page-header">
+      <div class="page-eyebrow">Welcome back</div>
+      <h1 class="page-title">Your Growth Hub</h1>
+      <p class="page-sub">Infinite games, adaptive lessons, and a smart tutor — all in one place.</p>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-stat">
+        <div class="dash-stat-label">GHUB Balance</div>
+        <div class="dash-stat-val" id="dash-bal">0</div>
+        <div class="dash-stat-sub">tokens earned</div>
+        <div class="progress-bar"><div class="progress-fill" id="dash-prog" style="width:60%"></div></div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Level</div>
+        <div class="dash-stat-val" id="dash-level" style="font-size:1.2rem;margin-top:4px;">Seedling</div>
+        <div class="dash-stat-sub" id="dash-next">80 to Explorer</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Games Played</div>
+        <div class="dash-stat-val" id="dash-games">0</div>
+        <div class="dash-stat-sub">this session</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Lessons Done</div>
+        <div class="dash-stat-val" id="dash-lessons">0</div>
+        <div class="dash-stat-sub">of 8 total</div>
+      </div>
+    </div>
+    <div class="levels-row" id="levels-row">
+      <div class="lvl" id="lvl-0"><div class="lvl-name">Seedling</div><div class="lvl-pts">0</div></div>
+      <div class="lvl" id="lvl-1"><div class="lvl-name">Thinker</div><div class="lvl-pts">50</div></div>
+      <div class="lvl" id="lvl-2"><div class="lvl-name">Explorer</div><div class="lvl-pts">200</div></div>
+      <div class="lvl" id="lvl-3"><div class="lvl-name">Builder</div><div class="lvl-pts">400</div></div>
+      <div class="lvl" id="lvl-4"><div class="lvl-name">Innovator</div><div class="lvl-pts">700</div></div>
+    </div>
+    <div style="margin-top:1.5rem;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn-ink" onclick="showPage('games')">Play a Game →</button>
+      <button class="btn-outline" onclick="showPage('lessons')">Start a Lesson →</button>
+      <button class="btn-outline" onclick="showPage('tutor')">Ask Your Tutor →</button>
+    </div>
+  </div>
+
+  <!-- GAMES PAGE -->
+  <div id="page-games" class="page">
+    <div id="games-list-view">
+      <div class="page-header">
+        <div class="page-eyebrow">Smart · Adaptive</div>
+        <h1 class="page-title">Brain Games</h1>
+        <p class="page-sub">Every game is fresh and different — infinite variety, adaptive difficulty.</p>
+      </div>
+      <div class="filter-row">
+        <button class="ftab on" onclick="filterCards('all',this)">All</button>
+        <button class="ftab" onclick="filterCards('logic',this)">Logic</button>
+        <button class="ftab" onclick="filterCards('memory',this)">Memory</button>
+        <button class="ftab" onclick="filterCards('creative',this)">Creativity</button>
+        <button class="ftab" onclick="filterCards('math',this)">Math</button>
+      </div>
+      <div class="card-grid">
+        <div class="card" data-cat="logic" onclick="startGame('Tower of Hanoi','logic','Move disks between pegs using logic. Only smaller disks can go on top.')"><div class="card-cat">Logic</div><div class="card-title">Tower of Hanoi</div><div class="card-desc">Move disks using pure logic. Scales with difficulty.</div><div class="card-footer"><span class="card-age">All ages</span><span class="card-ghub">+10 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="logic" onclick="startGame('Missing Number','logic','Present a 3x3 number grid where every row and column sums to the same total. One cell contains &quot;?&quot;. Format the grid using an HTML table with bordered cells — never use plain text or line breaks for the grid layout. The question field must contain the full HTML table showing the grid with the missing cell as &quot;?&quot;. Player picks the correct missing number from 4 options.')"><div class="card-cat">Logic</div><div class="card-title">Missing Number</div><div class="card-desc">A number grid with one missing. Every row & column must balance.</div><div class="card-footer"><span class="card-age">All ages</span><span class="card-ghub">+10 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="logic" onclick="startGame('Logic Riddle','logic','A lateral thinking or logic deduction puzzle with clues.')"><div class="card-cat">Logic</div><div class="card-title">Logic Riddle</div><div class="card-desc">Deduce the answer from a set of clues.</div><div class="card-footer"><span class="card-age">Adults</span><span class="card-ghub">+15 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="logic" onclick="startGame('Sequence Puzzle','logic','What comes next in this logical sequence? Number or pattern based.')"><div class="card-cat">Logic</div><div class="card-title">Sequence Puzzle</div><div class="card-desc">Spot the pattern. What comes next?</div><div class="card-footer"><span class="card-age">Kids+</span><span class="card-ghub">+8 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="memory" onclick="startGame('Memory Quiz','memory','A memory and recall quiz — show facts, then test recall.')"><div class="card-cat">Memory</div><div class="card-title">Memory Quiz</div><div class="card-desc">Remember facts, then answer from memory.</div><div class="card-footer"><span class="card-age">All ages</span><span class="card-ghub">+10 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="memory" onclick="startGame('Word Recall','memory','Show a list of words, then test how many the player can recall.')"><div class="card-cat">Memory</div><div class="card-title">Word Recall</div><div class="card-desc">Read the list. Hide it. How many can you remember?</div><div class="card-footer"><span class="card-age">Teens+</span><span class="card-ghub">+10 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="memory" onclick="startGame('Associative Memory','memory','Connect pairs of unrelated words or concepts to test associative memory.')"><div class="card-cat">Memory</div><div class="card-title">Pair Associations</div><div class="card-desc">Learn pairs. Recall the partner from a cue.</div><div class="card-footer"><span class="card-age">Adults</span><span class="card-ghub">+12 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="memory" onclick="startGame('Story Memory','memory','A short story is told, then comprehension and detail questions are asked.')"><div class="card-cat">Memory</div><div class="card-title">Story Memory</div><div class="card-desc">Read a story. Answer detail questions from memory.</div><div class="card-footer"><span class="card-age">Kids+</span><span class="card-ghub">+10 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="creative" onclick="startGame('Divergent Thinking','creative','How many creative uses can you think of for an ordinary object?')"><div class="card-cat">Creativity</div><div class="card-title">Divergent Thinking</div><div class="card-desc">How many uses for a paperclip? Go wild.</div><div class="card-footer"><span class="card-age">All ages</span><span class="card-ghub">+10 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="creative" onclick="startGame('Lateral Riddle','creative','A classic lateral thinking puzzle where the answer is surprising and non-obvious.')"><div class="card-cat">Creativity</div><div class="card-title">Lateral Riddle</div><div class="card-desc">Strange situation. Ask yes/no questions to crack it.</div><div class="card-footer"><span class="card-age">Teens+</span><span class="card-ghub">+12 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="creative" onclick="startGame('Word Spark','creative','Connect two random unrelated words with a creative link or story.')"><div class="card-cat">Creativity</div><div class="card-title">Word Spark</div><div class="card-desc">Two random words. Connect them creatively.</div><div class="card-footer"><span class="card-age">All ages</span><span class="card-ghub">+8 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="creative" onclick="startGame('Story Starter','creative','An unusual opening line to a story is given — the player continues it.')"><div class="card-cat">Creativity</div><div class="card-title">Story Starter</div><div class="card-desc">An opening line. Where does the story go?</div><div class="card-footer"><span class="card-age">Kids+</span><span class="card-ghub">+10 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="math" onclick="startGame('Make 24','math','Use 4 random numbers and +−×÷ operators to reach exactly 24.')"><div class="card-cat">Math</div><div class="card-title">Make 24</div><div class="card-desc">4 numbers. Any operators. Reach exactly 24.</div><div class="card-footer"><span class="card-age">Teens+</span><span class="card-ghub">+12 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="math" onclick="startGame('Speed Maths','math','Quick-fire mental arithmetic questions — addition, subtraction, multiplication.')"><div class="card-cat">Math</div><div class="card-title">Speed Maths</div><div class="card-desc">Mental arithmetic. As fast as you can.</div><div class="card-footer"><span class="card-age">Kids+</span><span class="card-ghub">+10 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="math" onclick="startGame('Number Pattern','math','What is the next number in this mathematical sequence?')"><div class="card-cat">Math</div><div class="card-title">Number Pattern</div><div class="card-desc">Spot the rule. What comes next?</div><div class="card-footer"><span class="card-age">All ages</span><span class="card-ghub">+10 GHUB</span></div><div class="card-arrow">→</div></div>
+        <div class="card" data-cat="math" onclick="startGame('Math Riddle','math','A word problem that requires clever mathematical reasoning to solve.')"><div class="card-cat">Math</div><div class="card-title">Math Riddle</div><div class="card-desc">A tricky word problem. Think it through.</div><div class="card-footer"><span class="card-age">Teens+</span><span class="card-ghub">+12 GHUB</span></div><div class="card-arrow">→</div></div>
+      </div>
+    </div>
+
+    <!-- GAME ARENA -->
+    <div id="game-arena">
+      <div class="arena-header">
+        <button class="arena-back" onclick="exitGame()">← Back</button>
+        <div class="arena-title" id="arena-title">Game</div>
+        <div class="arena-meta" id="arena-meta"></div>
+      </div>
+      <div class="game-score-bar">
+        <span class="score-label">Score:</span><span class="score-val" id="game-score">0</span>
+        <span class="score-label" style="margin-left:1rem;">Round:</span><span class="score-val" id="game-round">1 of 5</span>
+        <span class="score-label" style="margin-left:auto;">Difficulty:</span><span class="score-val" id="game-diff">Medium</span>
+      </div>
+      <div class="game-frame">
+        <div id="game-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LESSONS PAGE -->
+  <div id="page-lessons" class="page">
+    <div id="lessons-list-view">
+      <div class="page-header">
+        <div class="page-eyebrow">Fresh every session</div>
+        <h1 class="page-title">Lessons</h1>
+        <p class="page-sub">8 interactive lessons from zero to builder. Each one tailored to you.</p>
+      </div>
+      <div class="lesson-list">
+        <div class="lesson-row" onclick="startLesson(1,'How does your brain actually learn?','A fascinating look at how learning machines work')"><div class="lnum">01</div><div><div class="ltitle">How does your brain actually learn?</div><div class="ldesc">A fascinating look at how learning machines work</div></div><div class="lmeta"><span class="lage">All ages</span><span class="lghub">+25 GHUB</span></div></div>
+        <div class="lesson-row" onclick="startLesson(2,'How does a brain learn? Neural networks explained','Train a tiny learning machine with examples — watch it learn')"><div class="lnum">02</div><div><div class="ltitle">How does a brain learn? (Neural networks)</div><div class="ldesc">Train a tiny learning machine with clicks — see it learn in real time</div></div><div class="lmeta"><span class="lage">Kids+</span><span class="lghub">+25 GHUB</span></div></div>
+        <div class="lesson-row" onclick="startLesson(3,'Teach a machine to sort things — classification','Drag examples, watch the machine classify them')"><div class="lnum">03</div><div><div class="ltitle">Teach a machine to sort things</div><div class="ldesc">Drag examples into buckets — watch it learn to classify</div></div><div class="lmeta"><span class="lage">Kids+</span><span class="lghub">+25 GHUB</span></div></div>
+        <div class="lesson-row" onclick="startLesson(4,'How do smart machines predict text? LLMs explained','Predict the next word — the surprisingly simple idea behind smart machines')"><div class="lnum">04</div><div><div class="ltitle">How do smart machines predict text?</div><div class="ldesc">Predict the next word — the surprisingly simple idea behind smart machines</div></div><div class="lmeta"><span class="lage">Teens+</span><span class="lghub">+25 GHUB</span></div></div>
+        <div class="lesson-row" onclick="startLesson(5,'Build your first smart game using prompts — no coding','Design a quiz game with smart prompts')"><div class="lnum">05</div><div><div class="ltitle">Build your first smart game (no code)</div><div class="ldesc">Use prompts to design a simple quiz game</div></div><div class="lmeta"><span class="lage">All ages</span><span class="lghub">+30 GHUB</span></div></div>
+        <div class="lesson-row" onclick="startLesson(6,'Why machines can be unfair — bias and fairness','Spot bias in machine decisions with hands-on examples')"><div class="lnum">06</div><div><div class="ltitle">Why machines can be unfair — and how to fix it</div><div class="ldesc">Spot bias in machine decisions — hands-on examples</div></div><div class="lmeta"><span class="lage">Teens+</span><span class="lghub">+25 GHUB</span></div></div>
+        <div class="lesson-row" onclick="startLesson(7,'How machines see images — computer vision basics','Draw a shape, watch the machine recognise it')"><div class="lnum">07</div><div><div class="ltitle">How machines see images</div><div class="ldesc">Draw a shape — watch it try to recognise it live</div></div><div class="lmeta"><span class="lage">All ages</span><span class="lghub">+25 GHUB</span></div></div>
+        <div class="lesson-row" onclick="startLesson(8,'Prompt engineering — how to talk to machines effectively','Master the skill that makes smart tools 10× more useful')"><div class="lnum">08</div><div><div class="ltitle">Talk to machines like a pro (prompt engineering)</div><div class="ldesc">The skill that makes smart tools 10× more useful — practise here</div></div><div class="lmeta"><span class="lage">Teens+</span><span class="lghub">+30 GHUB</span></div></div>
+      </div>
+    </div>
+    <div id="lesson-viewer">
+      <div class="arena-header">
+        <button class="arena-back" onclick="exitLesson()">← Back</button>
+        <div class="arena-title" id="lesson-title">Lesson</div>
+      </div>
+      <div class="lesson-content" id="lesson-body"></div>
+      <div class="game-actions" style="margin-top:1rem;" id="lesson-actions"></div>
+    </div>
+  </div>
+
+  <!-- TUTOR PAGE -->
+  <div id="page-tutor" class="page">
+    <div class="page-header">
+      <div class="page-eyebrow">Always on</div>
+      <h1 class="page-title">Your Tutor</h1>
+      <p class="page-sub">Ask anything — brain science, your games, learning tips, or how to level up your GHUB.</p>
+    </div>
+    <div class="chat-suggestions" id="chat-sugs">
+      <button class="chat-sug" onclick="sendSuggestion(this)">What game should I play next?</button>
+      <button class="chat-sug" onclick="sendSuggestion(this)">Explain neural networks simply</button>
+      <button class="chat-sug" onclick="sendSuggestion(this)">How do I improve my memory?</button>
+      <button class="chat-sug" onclick="sendSuggestion(this)">What is prompt engineering?</button>
+      <button class="chat-sug" onclick="sendSuggestion(this)">How does BrainStop help me grow?</button>
+    </div>
+    <div class="chat-wrap">
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg ai">
+          <div class="msg-avatar">B</div>
+          <div class="msg-bubble">Hi! I'm your BrainStop tutor. Ask me anything — about your games, the lessons, brain science, or how to level up your GHUB. What's on your mind?</div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" placeholder="Ask anything…" onkeydown="if(event.key==='Enter')sendChat()"/>
+        <button class="chat-send" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOKEN PAGE -->
+  <div id="page-token" class="page">
+    <div class="page-header">
+      <div class="page-eyebrow">Your growth currency</div>
+      <h1 class="page-title">GHUB Token</h1>
+      <p class="page-sub">Earn by growing. Spend to unlock. Every action on BrainStop earns you GHUB.</p>
+    </div>
+    <div class="dash-grid section-gap">
+      <div class="dash-stat">
+        <div class="dash-stat-label">Balance</div>
+        <div class="dash-stat-val" id="tok-bal">0</div>
+        <div class="dash-stat-sub">GHUB tokens</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Level</div>
+        <div class="dash-stat-val" id="tok-level" style="font-size:1.1rem;margin-top:4px;">Seedling</div>
+        <div class="dash-stat-sub" id="tok-next">80 to Explorer</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Total Earned</div>
+        <div class="dash-stat-val" id="tok-earned">0</div>
+        <div class="dash-stat-sub">lifetime</div>
+      </div>
+    </div>
+    <div class="token-section">
+      <div class="token-block">
+        <div class="token-block-head">Earn GHUB</div>
+        <div class="token-row"><span class="token-row-label">Daily login</span><div style="display:flex;align-items:center;gap:8px;"><span class="token-row-val">+5</span><button class="earn-btn" id="daily-btn" onclick="claimDaily()">Claim</button></div></div>
+        <div class="token-row"><span class="token-row-label">Play a game</span><span class="token-row-val">+8–15</span></div>
+        <div class="token-row"><span class="token-row-label">Finish a lesson</span><span class="token-row-val">+25–30</span></div>
+        <div class="token-row"><span class="token-row-label">Refer a friend</span><span class="token-row-val">+50</span></div>
+        <div class="token-row"><span class="token-row-label">Weekly challenge</span><span class="token-row-val">+100</span></div>
+      </div>
+      <div class="token-block">
+        <div class="token-block-head">Spend GHUB</div>
+        <div class="token-row"><span class="token-row-label">Hint in a game</span><div style="display:flex;align-items:center;gap:8px;"><span class="token-row-val">10</span><button class="earn-btn" onclick="spendTokens(10,'Used a hint')">Spend</button></div></div>
+        <div class="token-row"><span class="token-row-label">Unlock premium game</span><div style="display:flex;align-items:center;gap:8px;"><span class="token-row-val">30</span><button class="earn-btn" onclick="spendTokens(30,'Unlocked premium game')">Spend</button></div></div>
+        <div class="token-row"><span class="token-row-label">Join live workshop</span><div style="display:flex;align-items:center;gap:8px;"><span class="token-row-val">100</span><button class="earn-btn" onclick="spendTokens(100,'Joined workshop')">Spend</button></div></div>
+        <div class="token-row"><span class="token-row-label">1 month premium</span><div style="display:flex;align-items:center;gap:8px;"><span class="token-row-val">200</span><button class="earn-btn" onclick="spendTokens(200,'Activated premium')">Spend</button></div></div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.5rem;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Transaction log</div>
+    <div class="tx-log" id="tx-log"></div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ── LOCALSTORAGE ──
+function saveState() {
+  try {
+    localStorage.setItem('brainstop', JSON.stringify({
+      balance: state.balance,
+      totalEarned: state.totalEarned,
+      gamesPlayed: state.gamesPlayed,
+      lessonsDone: state.lessonsDone,
+      dailyClaimed: state.dailyClaimed,
+      dailyDate: state.dailyDate,
+      lessonsDoneSet: [...state.lessonsDoneSet],
+      txLog: state.txLog || [],
+    }));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('brainstop');
+    if (saved) {
+      const s = JSON.parse(saved);
+      const today = new Date().toDateString();
+      const dailyClaimed = s.dailyDate === today ? s.dailyClaimed : false;
+      return {
+        balance: s.balance ?? 0,
+        totalEarned: s.totalEarned ?? 0,
+        gamesPlayed: s.gamesPlayed ?? 0,
+        lessonsDone: s.lessonsDone ?? 0,
+        dailyClaimed,
+        dailyDate: today,
+        lessonsDoneSet: new Set(s.lessonsDoneSet || []),
+        txLog: s.txLog || [],
+      };
+    }
+  } catch(e) {}
+  return {
+    balance: 0, totalEarned: 0, gamesPlayed: 0, lessonsDone: 0,
+    dailyClaimed: false, dailyDate: new Date().toDateString(),
+    lessonsDoneSet: new Set(),
+    txLog: [],
+  };
+}
+
+// ── STATE ──
+const state = {
+  ...loadState(),
+  currentGame: null, currentRound: 1, totalRounds: 5,
+  gameScore: 0, gameDifficulty: 'Medium', gameGhub: 10,
+};
+
+const LEVELS = [
+  {min:0,label:'Seedling'},
+  {min:50,label:'Thinker'},
+  {min:200,label:'Explorer'},
+  {min:400,label:'Builder'},
+  {min:700,label:'Innovator'},
+];
+const NEXT_AT = [50,200,400,700,1000];
+
+function getLevel(b) {
+  let l = LEVELS[0], i = 0;
+  LEVELS.forEach((lv,idx)=>{ if(b>=lv.min){l=lv;i=idx;} });
+  return {level:l,idx:i};
+}
+
+function updateUI() {
+  const {level,idx} = getLevel(state.balance);
+  const nextPts = NEXT_AT[idx] || state.balance+300;
+  const pct = Math.min(100, Math.round((state.balance - level.min)/(nextPts-level.min)*100));
+  const toNext = Math.max(0, nextPts - state.balance);
+
+  document.getElementById('hdr-bal').textContent = state.balance;
+  document.getElementById('hdr-level').textContent = level.label;
+  document.getElementById('dash-bal').textContent = state.balance;
+  document.getElementById('dash-prog').style.width = pct+'%';
+  document.getElementById('dash-level').textContent = level.label;
+  document.getElementById('dash-next').textContent = toNext > 0 ? toNext+' to '+( LEVELS[idx+1]?.label||'Max') : 'Max level!';
+  document.getElementById('dash-games').textContent = state.gamesPlayed;
+  document.getElementById('dash-lessons').textContent = state.lessonsDone;
+  document.getElementById('tok-bal').textContent = state.balance;
+  document.getElementById('tok-level').textContent = level.label;
+  document.getElementById('tok-next').textContent = toNext > 0 ? toNext+' to '+(LEVELS[idx+1]?.label||'Max') : 'Max level!';
+  document.getElementById('tok-earned').textContent = state.totalEarned;
+  // Highlight current level
+  for(let i=0;i<5;i++){
+    const el = document.getElementById('lvl-'+i);
+    if(el) el.classList.toggle('current', i===idx);
+  }
+}
+
+function addTx(label, amount, positive, timestamp) {
+  const log = document.getElementById('tx-log');
+  const now = timestamp || new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const row = document.createElement('div');
+  row.className = 'tx-row';
+  row.innerHTML = `<span class="tx-label">${label} · ${now}</span><span class="${positive?'tx-plus':'tx-minus'}">${positive?'+':'−'}${amount} GHUB</span>`;
+  log.insertBefore(row, log.firstChild);
+  if(!timestamp) {
+    // only persist new entries, not restores
+    state.txLog = state.txLog || [];
+    state.txLog.unshift({label, amount, positive, time: now});
+    if(state.txLog.length > 50) state.txLog = state.txLog.slice(0,50);
+  }
+}
+
+function restoreTxLog() {
+  if(!state.txLog || state.txLog.length === 0) return;
+  const log = document.getElementById('tx-log');
+  log.innerHTML = '';
+  // txLog is stored newest-first, restore in order
+  state.txLog.forEach(tx => {
+    const row = document.createElement('div');
+    row.className = 'tx-row';
+    row.innerHTML = `<span class="tx-label">${tx.label} · ${tx.time}</span><span class="${tx.positive?'tx-plus':'tx-minus'}">${tx.positive?'+':'−'}${tx.amount} GHUB</span>`;
+    log.appendChild(row);
+  });
+}
+
+function earn(amt, label) {
+  state.balance += amt;
+  state.totalEarned += amt;
+  addTx(label, amt, true);
+  updateUI();
+  saveState();
+}
+
+function spendTokens(amt, label) {
+  if(state.balance < amt){ alert('Not enough GHUB — earn more by playing!'); return; }
+  state.balance -= amt;
+  addTx(label, amt, false);
+  updateUI();
+  saveState();
+}
+
+function claimDaily() {
+  if(state.dailyClaimed){ alert('Already claimed today!'); return; }
+  state.dailyClaimed = true;
+  state.dailyDate = new Date().toDateString();
+  document.getElementById('daily-btn').disabled = true;
+  document.getElementById('daily-btn').textContent = '✓';
+  earn(5, 'Daily login bonus');
+  saveState();
+}
+
+// ── NAVIGATION ──
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if(n.getAttribute('onclick')?.includes("'"+id+"'")) n.classList.add('active');
+  });
+  if(id==='games') exitGame();
+  if(id==='lessons') exitLesson();
+}
+
+function filterCards(cat, el) {
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.card').forEach(c=>{
+    c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none';
+  });
+}
+
+// ── CLAUDE API ──
+async function callClaude(systemPrompt, userMessage) {
+  const res = await fetch('/api/chat', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1000,
+      system: systemPrompt,
+      messages:[{role:'user',content:userMessage}]
+    })
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text || '';
+}
+
+// ── GAMES ──
+let gameHistory = [];
+
+async function startGame(name, cat, description) {
+  state.currentGame = {name, cat, description};
+  state.currentRound = 1;
+  state.gameScore = 0;
+  state.gameDifficulty = 'Medium';
+  state.gameGhub = parseInt(document.querySelector(`[onclick*="${name}"]`)?.querySelector('.card-ghub')?.textContent) || 10;
+
+  document.getElementById('games-list-view').style.display='none';
+  document.getElementById('game-arena').style.display='block';
+  document.getElementById('arena-title').textContent = name;
+  document.getElementById('game-score').textContent = '0';
+  document.getElementById('game-round').textContent = '1 of 5';
+  document.getElementById('game-diff').textContent = 'Medium';
+  gameHistory = [];
+  await loadGameRound();
+}
+
+async function loadGameRound() {
+  const body = document.getElementById('game-body');
+  body.innerHTML = `<div class="ai-loading"><div class="ai-dots"><span></span><span></span><span></span></div>Loading your game…</div>`;
+
+  const perfNote = gameHistory.length > 0
+    ? `Player performance so far: ${gameHistory.map(h=>h.correct?'correct':'wrong').join(', ')}. Adjust difficulty accordingly — if mostly correct, make it harder.`
+    : 'This is the first round. Start at medium difficulty.';
+
+  const seed = Math.floor(Math.random() * 99999);
+  const system = `You are BrainStop's game engine. Generate a single round of the game: "${state.currentGame.name}". 
+Game type: ${state.currentGame.cat}. Description: ${state.currentGame.description}.
+${perfNote}
+Variety seed: ${seed} — use this to ensure this round is completely different from previous rounds. Never repeat the same question.
+Respond ONLY with valid JSON, no markdown, no extra text, no trailing commas:
+{"question":"the question or challenge text","type":"mcq","options":["option A","option B","option C","option D"],"answer":"option A","hint":"a helpful hint","difficulty":"Medium"}
+For math/logic use type mcq with 4 clear options. difficulty must be Easy, Medium, or Hard.`;
+
+  try {
+    const raw = await callClaude(system, `Generate round ${state.currentRound} of ${state.currentGame.name}. Seed: ${seed}`);
+    let clean = raw.replace(/```json|```/g,'').trim();
+    // Fix common JSON issues
+    clean = clean.replace(/,\s*}/g,'}').replace(/,\s*]/g,']');
+    const game = JSON.parse(clean);
+    if (!game.question) throw new Error('Invalid response');
+    state.gameDifficulty = game.difficulty || 'Medium';
+    document.getElementById('game-diff').textContent = state.gameDifficulty;
+    renderGameRound(game);
+  } catch(e) {
+    console.error('Game load error:', e);
+    body.innerHTML = `<div class="game-content"><p style="color:var(--muted);margin-bottom:1rem;">Hmm, couldn't load this round.</p><div class="game-actions"><button class="btn-ink" onclick="loadGameRound()">Try Again →</button><button class="btn-outline" onclick="exitGame()">Back to Games</button></div></div>`;
+  }
+}
+
+let _currentGame = null;
+
+function renderGameRound(game) {
+  _currentGame = game;
+  const body = document.getElementById('game-body');
+  let html = `<div class="game-question">${game.question}</div>`;
+
+  if(game.type === 'mcq' && game.options) {
+    html += `<div class="game-options">`;
+    game.options.forEach((opt,i)=>{
+      html += `<button class="game-opt" onclick="checkAnswer(this,${i})">${opt}</button>`;
+    });
+    html += `</div>`;
+    html += `<div class="game-actions" style="margin-top:0.75rem;">
+      <button class="btn-outline hint-btn" id="hint-btn" onclick="showHint()">💡 Hint (−5 GHUB)</button>
+    </div>`;
+  } else {
+    html += `<input class="game-input" id="game-answer-input" placeholder="Your answer…"/><br/>`;
+    html += `<div class="game-actions" style="margin-top:0.75rem;">
+      <button class="btn-ink" onclick="checkTextAnswer()">Submit</button>
+      <button class="btn-outline hint-btn" id="hint-btn" onclick="showHint()">💡 Hint (−5 GHUB)</button>
+    </div>`;
+  }
+  html += `<div class="game-feedback" id="game-feedback"></div>`;
+  body.innerHTML = html;
+}
+
+function checkAnswer(btn, chosenIdx) {
+  const game = _currentGame;
+  const chosen = game.options[chosenIdx];
+  const correct = game.answer;
+  const hint = game.hint || '';
+  document.querySelectorAll('.game-opt').forEach(b=>b.disabled=true);
+  document.getElementById('hint-btn') && (document.getElementById('hint-btn').disabled=true);
+  const isCorrect = chosen.toLowerCase().trim() === correct.toLowerCase().trim();
+  btn.classList.add(isCorrect?'correct':'wrong');
+  if(!isCorrect){
+    document.querySelectorAll('.game-opt').forEach(b=>{
+      if(b.textContent.toLowerCase().trim()===correct.toLowerCase().trim()) b.classList.add('correct');
+    });
+  }
+  showFeedback(isCorrect, correct, hint, game);
+}
+
+function checkTextAnswer() {
+  const game = _currentGame;
+  const correct = game.answer;
+  const hint = game.hint || '';
+  const input = document.getElementById('game-answer-input');
+  const val = input?.value?.trim() || '';
+  const isCorrect = val.toLowerCase().includes(correct.toLowerCase().trim().substring(0,8));
+  input && (input.disabled=true);
+  document.getElementById('hint-btn') && (document.getElementById('hint-btn').disabled=true);
+  showFeedback(isCorrect, correct, hint, game);
+}
+
+function showFeedback(isCorrect, correct, hint, game) {
+  if(isCorrect) {
+    const pts = state.gameDifficulty==='Hard'?15:state.gameDifficulty==='Easy'?5:10;
+    state.gameScore += pts;
+    document.getElementById('game-score').textContent = state.gameScore;
+  }
+  gameHistory.push({correct:isCorrect, round:state.currentRound});
+
+  const fb = document.getElementById('game-feedback');
+  fb.className = 'game-feedback show '+(isCorrect?'good':'bad');
+  fb.innerHTML = isCorrect
+    ? `✓ Correct! ${state.gameDifficulty==='Hard'?'+15':state.gameDifficulty==='Easy'?'+5':'+10'} points.`
+    : `✗ Not quite — the answer was: <strong>${correct}</strong>. ${hint}`;
+
+  fb.innerHTML += `<div class="game-actions" style="margin-top:0.75rem;">
+    ${state.currentRound < state.totalRounds
+      ? `<button class="btn-ink" onclick="nextRound()">Next Round →</button>`
+      : `<button class="btn-ink" onclick="finishGame()">Finish Game</button>`}
+    <button class="btn-outline" onclick="exitGame()">Quit</button>
+  </div>`;
+}
+
+function showHint() {
+  const hint = (_currentGame && _currentGame.hint) || 'No hint available.';
+  if(state.balance < 5){ alert('Not enough GHUB for a hint!'); return; }
+  spendTokens(5,'Used hint in '+state.currentGame.name);
+  document.getElementById('hint-btn') && (document.getElementById('hint-btn').disabled=true);
+  const fb = document.getElementById('game-feedback');
+  fb.className = 'game-feedback show bad';
+  fb.innerHTML = `💡 Hint: ${hint}`;
+}
+
+function nextRound() {
+  state.currentRound++;
+  document.getElementById('game-round').textContent = state.currentRound+' of 5';
+  loadGameRound();
+}
+
+function finishGame() {
+  state.gamesPlayed++;
+  saveState();
+  const ghubEarned = state.gameGhub + Math.floor(state.gameScore/10);
+  earn(ghubEarned, 'Completed '+state.currentGame.name);
+  const body = document.getElementById('game-body');
+  body.innerHTML = `
+    <div style="text-align:center;padding:2rem 1rem;">
+      <div style="font-family:var(--serif);font-size:2rem;margin-bottom:0.5rem;">${state.gameScore} pts</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:1.25rem;">Game complete! You earned <strong style="color:var(--gold)">+${ghubEarned} GHUB</strong></div>
+      <div class="game-actions" style="justify-content:center;">
+        <button class="btn-ink" onclick="startGame('${state.currentGame.name}','${state.currentGame.cat}','${state.currentGame.description}')">Play Again</button>
+        <button class="btn-outline" onclick="exitGame()">Back to Games</button>
+      </div>
+    </div>`;
+  document.getElementById('game-feedback') && (document.getElementById('game-feedback').style.display='none');
+}
+
+function exitGame() {
+  document.getElementById('games-list-view').style.display='block';
+  document.getElementById('game-arena').style.display='none';
+}
+
+// ── LESSONS ──
+async function startLesson(num, title, desc) {
+  document.getElementById('lessons-list-view').style.display='none';
+  document.getElementById('lesson-viewer').style.display='block';
+  document.getElementById('lesson-title').textContent = 'Lesson '+num+': '+title.split('—')[0].trim();
+  document.getElementById('lesson-body').innerHTML = `<div class="ai-loading"><div class="ai-dots"><span></span><span></span><span></span></div>Preparing your lesson…</div>`;
+  document.getElementById('lesson-actions').innerHTML='';
+
+  const system = `You are BrainStop's lesson engine. Generate an engaging, concise interactive lesson for a brain growth platform. 
+The audience is all ages (adapt language to be accessible but not childish). 
+Use HTML formatting: <h3> for subsections, <p> for paragraphs, <ul><li> for bullet points, <strong> for key terms.
+Include a short "Try it" interactive prompt at the end inside a div with class="lesson-interact" and a label div with class="lesson-interact-label" containing "Try it".
+Keep it under 400 words. Make it genuinely interesting and educational.`;
+
+  try {
+    const content = await callClaude(system, `Generate lesson ${num}: "${title}". Description: ${desc}`);
+    document.getElementById('lesson-body').innerHTML = content;
+    const ghub = num===5||num===8?30:25;
+    const alreadyDone = state.lessonsDoneSet.has(num);
+    document.getElementById('lesson-actions').innerHTML = `
+      <button class="btn-ink" onclick="completeLesson(${num},${ghub},this)" ${alreadyDone?'disabled':''}>
+        ${alreadyDone?'✓ Completed':'Mark Complete (+'+ghub+' GHUB)'}
+      </button>
+      <button class="btn-outline" onclick="exitLesson()">Back</button>`;
+  } catch(e) {
+    document.getElementById('lesson-body').innerHTML = `<p style="color:var(--muted)">Couldn't load lesson — please try again.</p>`;
+    document.getElementById('lesson-actions').innerHTML = `<button class="btn-outline" onclick="exitLesson()">Back</button>`;
+  }
+}
+
+function completeLesson(num, ghub, btn) {
+  if(state.lessonsDoneSet.has(num)) return;
+  state.lessonsDoneSet.add(num);
+  state.lessonsDone = state.lessonsDoneSet.size;
+  saveState();
+  earn(ghub, 'Completed Lesson '+num);
+  btn.textContent='✓ Completed';
+  btn.disabled=true;
+}
+
+function exitLesson() {
+  document.getElementById('lessons-list-view').style.display='block';
+  document.getElementById('lesson-viewer').style.display='none';
+}
+
+// ── TUTOR CHAT ──
+let chatHistory = [];
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value='';
+  appendMsg('user', msg);
+  chatHistory.push({role:'user',content:msg});
+
+  const typing = document.createElement('div');
+  typing.className='msg ai';
+  typing.id='typing-indicator';
+  typing.innerHTML='<div class="msg-avatar">B</div><div class="typing"><span></span><span></span><span></span></div>';
+  document.getElementById('chat-messages').appendChild(typing);
+  scrollChat();
+
+  const system = `You are BrainStop's friendly tutor. BrainStop is an online brain growth hub with 16 brain games (logic, memory, creativity, math) and 8 lessons on topics like neural networks, ChatGPT, prompt engineering, and AI fairness. Users earn GHUB tokens by playing and learning.
+
+Be warm, concise, and genuinely helpful. Answer questions about brain science, games, learning, and the platform. Keep responses short — 2–4 sentences unless a longer explanation is needed. The user's current balance is ${state.balance} GHUB, level: ${getLevel(state.balance).level.label}.`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Something went wrong — try again.';
+    chatHistory.push({role:'assistant',content:reply});
+    document.getElementById('typing-indicator')?.remove();
+    appendMsg('ai', reply);
+  } catch(e) {
+    document.getElementById('typing-indicator')?.remove();
+    appendMsg('ai', 'Connection error — please check and try again.');
+  }
+}
+
+function sendSuggestion(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  sendChat();
+}
+
+function appendMsg(role, text) {
+  const wrap = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg '+role;
+  div.innerHTML = `<div class="msg-avatar">${role==='ai'?'B':'U'}</div><div class="msg-bubble">${text}</div>`;
+  wrap.appendChild(div);
+  scrollChat();
+}
+
+function scrollChat() {
+  const wrap = document.getElementById('chat-messages');
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+// ── INIT ──
+// Restore daily button if already claimed today
+if (state.dailyClaimed) {
+  const btn = document.getElementById('daily-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '✓'; }
+}
+// Restore transaction log for returning users
+restoreTxLog();
+updateUI();
+</script>
+</body>
+</html>
