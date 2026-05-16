@@ -662,7 +662,7 @@ function filterCards(cat, el) {
 
 // ── CLAUDE API ──
 async function callClaude(systemPrompt, userMessage) {
-  const res = await fetch('/api/chat', {
+  const res = await fetch('https://brainstop-api.jatinlifeandbeyond.workers.dev', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({
@@ -914,7 +914,7 @@ async function sendChat() {
 Be warm, concise, and genuinely helpful. Answer questions about brain science, games, learning, and the platform. Keep responses short — 2–4 sentences unless a longer explanation is needed. The user's current balance is ${state.balance} GHUB, level: ${getLevel(state.balance).level.label}.`;
 
   try {
-    const res = await fetch('/api/chat', {
+    const res = await fetch('https://brainstop-api.jatinlifeandbeyond.workers.dev', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
